@@ -938,16 +938,25 @@ export default function App() {
       setPreviewImageUrl(frameData.frameDataUrl);
       setPreviewCropUrl(frameData.cropDataUrl);
 
-      const isFake = frameData.fakeScore >= 0.5;
+      // Use the sample's ground-truth prediction instead of random per-frame roll.
+      // This prevents label inversion (e.g. a DEEPFAKE frame randomly labeled REAL).
+      const groundTruthIsFake = sample.simulatedPreset.expectedPrediction === 'DEEPFAKE';
+      const baseConf = sample.simulatedPreset.expectedConfidence;
+      // Add realistic ±4% per-frame jitter without ever crossing the label boundary
+      const jitter = (Math.random() - 0.5) * 8;
+      const frameConf = Math.round(Math.min(99.4, Math.max(75.0, baseConf + jitter)) * 10) / 10;
+      const frameFakeScore = groundTruthIsFake
+        ? Math.min(0.995, Math.max(0.75, frameData.fakeScore > 0.5 ? frameData.fakeScore : 0.82 + Math.random() * 0.12))
+        : Math.max(0.005, Math.min(0.25, frameData.fakeScore < 0.5 ? frameData.fakeScore : 0.08 + Math.random() * 0.12));
 
       frames.push({
         frameIndex: i + 1,
         timestamp: timecode,
         timestampFormatted: formatTimecode(timecode),
-        prediction: isFake ? 'DEEPFAKE' : 'REAL',
-        confidence: Math.round((isFake ? frameData.fakeScore : 1 - frameData.fakeScore) * 1000) / 10,
-        fakeScore: frameData.fakeScore,
-        realScore: 1 - frameData.fakeScore,
+        prediction: groundTruthIsFake ? 'DEEPFAKE' : 'REAL',
+        confidence: frameConf,
+        fakeScore: frameFakeScore,
+        realScore: 1 - frameFakeScore,
         faceDetected: true,
         boundingBox: frameData.bbox,
         faceCropUrl: frameData.cropDataUrl,
@@ -956,10 +965,10 @@ export default function App() {
         fftSpectrumDataUrl: frameData.fftSpectrumDataUrl,
         landmarksDataUrl: frameData.landmarksDataUrl,
         artifacts: {
-          boundaryBlendingScore: Math.round(frameData.fakeScore * 85 + Math.random() * 10),
-          frequencyDissonance: Math.round(frameData.fakeScore * 90 + Math.random() * 8),
-          eyeSymmetryScore: Math.round((1 - frameData.fakeScore) * 85 + 10),
-          textureConsistency: Math.round(Math.random() * 20 + 75)
+          boundaryBlendingScore: groundTruthIsFake ? Math.round(frameFakeScore * 85 + Math.random() * 10) : Math.round(Math.random() * 18 + 8),
+          frequencyDissonance: groundTruthIsFake ? Math.round(frameFakeScore * 90 + Math.random() * 8) : Math.round(Math.random() * 16 + 10),
+          eyeSymmetryScore: groundTruthIsFake ? Math.round((1 - frameFakeScore) * 85 + 10) : Math.round(Math.random() * 8 + 88),
+          textureConsistency: groundTruthIsFake ? Math.round(Math.random() * 20 + 28) : Math.round(Math.random() * 8 + 88)
         }
       });
 
