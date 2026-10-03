@@ -21,7 +21,11 @@ export const handler: Handler = async (event: HandlerEvent, context: HandlerCont
   }
 
   try {
-    const body = event.body ? JSON.parse(event.body) : {};
+    let rawBody = event.body || '{}';
+    if (event.isBase64Encoded) {
+      rawBody = Buffer.from(rawBody, 'base64').toString('utf8');
+    }
+    const body = JSON.parse(rawBody);
     const {
       imageBase64,
       fullFrameBase64,
