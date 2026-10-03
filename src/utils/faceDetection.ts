@@ -542,12 +542,12 @@ export function predictFrame(
   let finalFakeProb = Math.min(0.992, Math.max(0.015, compositeFakeProb + jitter));
 
   // Sensitivity decision threshold:
-  // - strict: 0.46 (targets subtle generative AI video)
-  // - balanced: 0.52 (balanced standard benchmark)
-  // - conservative: 0.62 (requires strong visible artifacts, ideal for avoiding false positives on compressed/podcast videos)
-  let decisionThreshold = 0.52;
-  if (sensitivity === 'strict') decisionThreshold = 0.46;
-  if (sensitivity === 'conservative') decisionThreshold = 0.62;
+  // - strict: 0.38 (targets subtle generative AI video & face swaps)
+  // - balanced: 0.44 (standard benchmark)
+  // - conservative: 0.50 (requires clear visual artifacts)
+  let decisionThreshold = 0.44;
+  if (sensitivity === 'strict') decisionThreshold = 0.38;
+  if (sensitivity === 'conservative') decisionThreshold = 0.50;
 
   const isFake = finalFakeProb >= decisionThreshold;
   const prediction: PredictionLabel = isFake ? 'DEEPFAKE' : 'REAL';
