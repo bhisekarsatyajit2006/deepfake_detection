@@ -779,20 +779,19 @@ export default function App() {
       // Forensic consensus decision rules:
       let isVideoFake = false;
 
-      if (geminiInspection?.prediction === 'DEEPFAKE' && (geminiInspection.confidence ?? 0) >= 65) {
-        // AI multimodal vision audit detected synthetic artifacts (Veo watermark, hand-hair glide, diffusion skin)
+      if (geminiInspection?.prediction === 'DEEPFAKE' && (geminiInspection.confidence ?? 0) >= 55) {
+        // AI multimodal vision audit detected synthetic artifacts
         isVideoFake = true;
-      } else if (geminiInspection?.prediction === 'REAL' && (geminiInspection.confidence ?? 0) >= 70) {
+      } else if (geminiInspection?.prediction === 'REAL' && (geminiInspection.confidence ?? 0) >= 80) {
         // AI multimodal vision audit explicitly verified authentic optical camera recording
-        // (accounts for camera compression, lighting, subtitles, and real biology)
         isVideoFake = false;
-      } else if (sequenceWatermarkDetected && (fakeRatio > 40 || jitterRatio > 0.25)) {
+      } else if (sequenceWatermarkDetected) {
         isVideoFake = true;
       } else {
         // Heuristic consensus: based on user sensitivity mode
-        const thresholdRatio = detectionSensitivity === 'conservative' ? 65 : detectionSensitivity === 'strict' ? 45 : 55;
-        const thresholdAvg = detectionSensitivity === 'conservative' ? 0.60 : detectionSensitivity === 'strict' ? 0.48 : 0.53;
-        isVideoFake = fakeRatio > thresholdRatio || avgFakeScore >= thresholdAvg;
+        const thresholdRatio = detectionSensitivity === 'conservative' ? 50 : detectionSensitivity === 'strict' ? 30 : 40;
+        const thresholdAvg = detectionSensitivity === 'conservative' ? 0.52 : detectionSensitivity === 'strict' ? 0.40 : 0.45;
+        isVideoFake = fakeRatio >= thresholdRatio || avgFakeScore >= thresholdAvg || jitterRatio > 0.15;
       }
 
       // Propagate confirmed verdict across sequence frames for consistent display
