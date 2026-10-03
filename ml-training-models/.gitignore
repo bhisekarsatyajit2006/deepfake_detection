@@ -1,0 +1,37 @@
+# ── Secrets / auth (NEVER commit) ─────────────────────────────────────────────
+.gh/
+env.sh
+*.token
+kaggle.json
+
+# ── Python ────────────────────────────────────────────────────────────────────
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+
+# ── Model weights (large binaries) ────────────────────────────────────────────
+*.pth
+*.onnx
+models/*.pth
+
+# ── Data & pipeline artifacts (large / not source) ────────────────────────────
+videos/
+kaggle_out/
+preprocessed/
+checkpoints/
+figures/
+output/
+dataset_index.csv
+merged_dataset_index.csv
+preprocess_progress.json
+metadata.csv
+*.mp4
+*.avi
+*.mov
+
+# ── Misc ──────────────────────────────────────────────────────────────────────
+.DS_Store
+.refactor_baseline.json

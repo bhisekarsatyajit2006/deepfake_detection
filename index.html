@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script>
+      (function () {
+        try {
+          var originalFetch = window.fetch;
+          var currentFetch = originalFetch;
+          var descriptor = {
+            get: function () {
+              return currentFetch;
+            },
+            set: function (newFetch) {
+              currentFetch = newFetch;
+            },
+            configurable: true,
+            enumerable: true,
+          };
+          try {
+            Object.defineProperty(window, 'fetch', descriptor);
+          } catch (e) {}
+          if (typeof Window !== 'undefined' && Window.prototype) {
+            try {
+              Object.defineProperty(Window.prototype, 'fetch', descriptor);
+            } catch (e) {}
+          }
+          if (typeof globalThis !== 'undefined' && globalThis !== window) {
+            try {
+              Object.defineProperty(globalThis, 'fetch', descriptor);
+            } catch (e) {}
+          }
+        } catch (err) {
+          // ignore
+        }
+      })();
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Deepfake Detection System</title>
+    <meta name="description" content="Video and image deepfake detection system utilizing frame-level facial extraction, deep learning transfer models (EfficientNet, Xception, ResNet), and research dataset benchmarks." />
+    <meta property="og:title" content="Deepfake Detection System" />
+    <meta property="og:description" content="Video and image deepfake detection system utilizing frame-level facial extraction, deep learning transfer models (EfficientNet, Xception, ResNet), and research dataset benchmarks." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

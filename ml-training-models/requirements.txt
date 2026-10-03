@@ -1,0 +1,12 @@
+# Local web app + diagnostics (macOS / CPU).
+# Install into a venv:  uv pip install -r requirements.txt
+flask>=2.3.0
+torch>=2.0.0
+torchvision>=0.15.0
+timm>=0.9.0
+albumentations>=1.3.0
+opencv-python>=4.8.0
+mtcnn>=0.1.1
+tensorflow>=2.13.0   # required by mtcnn (was missing — caused ModuleNotFoundError)
+numpy>=1.24.0
+Pillow>=9.0.0
